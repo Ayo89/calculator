@@ -63,6 +63,7 @@ for (let i = 0; i < simbols.length; i++) {
 
   //Logic buttons
   button.addEventListener("click", (e) => {
+    console.log(values)
     if (
       typeof Number(e.target.textContent) === "number" &&
       !isNaN(e.target.textContent)
@@ -76,6 +77,7 @@ for (let i = 0; i < simbols.length; i++) {
       e.target.textContent === "-" ||
       e.target.textContent === "*"
     ) {
+      console.log(tempResult)
       console.log(tempResult);
       //add operador to the stack
       operador.push(e.target.textContent);
@@ -88,7 +90,8 @@ for (let i = 0; i < simbols.length; i++) {
         console.log(values);
       }
       // check have some result in the stack and operate with this
-      if (tempResult > 0) {
+      if (tempResult > 0 && values[1]) {
+        console.log('este es el problema')
         tempResult = operator(
           operador[0],
           Number(tempResult),
@@ -114,6 +117,7 @@ for (let i = 0; i < simbols.length; i++) {
     }
     // take result and save result the next interaction!
     if (e.target.textContent === "=") {
+      console.log(tempValues)
       values.push(tempValues);
       console.log(`soy values ${values}`);
       console.log(`soy result y temp result ${result} ${tempResult}`);
@@ -128,7 +132,9 @@ for (let i = 0; i < simbols.length; i++) {
       console.log(`tempresult ${tempResult}`);
       tempValues = "";
       values = [];
+      operador.shift()
       values.push(tempResult);
+      console.log(values)
     }
     //result
   });
