@@ -1,11 +1,27 @@
+
+//save values for operate
 let values = [];
+
+//save the temporal values input from the user
 let tempValues = "";
+
+//save the tempResult take before to press final result in a operation
 let tempResult = 0;
+
+//save the final result after click =
 let result = 0;
+// used  for operate in operator function
 let totalFirstValue = "";
 let totalSecondValue = "";
+
+//save the operador in every operation
 let operador = [];
+
+//use for check if user take a final result
 let checkUserChoice = false;
+
+// check input used in validateInput function
+const regex = /^[\d*\/+\-=x]+$|^Enter$/;
 let button;
 
 //Add values
@@ -20,9 +36,12 @@ const checkValue = (value) => {
   }
 };
 
+//check text in the main screen
 const addTextScreen = (text) => {
-  if (text === "Enter" || text === '=') {
+  if (text === "Enter" || text === "=" || text === undefined) {
     textScreen.textContent += "";
+  } else if (text === "*") {
+    textScreen.textContent += "x";
   } else {
     textScreen.textContent += text;
   }
@@ -30,7 +49,6 @@ const addTextScreen = (text) => {
 
 //Operate function
 const operator = (operator, totalFirstValue, totalSecondValue) => {
-  console.log(`soy funcion operator ${operator}`);
   const operatos = {
     "+": (totalFirstValue, totalSecondValue) =>
       totalFirstValue + totalSecondValue,
@@ -59,8 +77,8 @@ screenCal.appendChild(textScreen);
 //General container
 let container = document.querySelector("#container");
 
-let containerHistoryScreen = document.createElement('div');
-containerHistoryScreen.setAttribute('id', 'containerHistoryScreen')
+let containerHistoryScreen = document.createElement("div");
+containerHistoryScreen.setAttribute("id", "containerHistoryScreen");
 
 container.appendChild(screenCal);
 
@@ -70,7 +88,7 @@ containerButton.setAttribute("id", "containerButton");
 container.appendChild(containerButton);
 
 //Create buttons and event click
-let simbols = ["+", "-", "*", "/", 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, "="];
+let simbols = ["+", "-", "x", "/", 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, "="];
 for (let i = 0; i < simbols.length; i++) {
   button = document.createElement("button");
   button.setAttribute("class", `button`);
@@ -79,19 +97,30 @@ for (let i = 0; i < simbols.length; i++) {
   }
   button.textContent = simbols[i];
   button.addEventListener("click", (e) => {
-    console.log(values);
-    console.log(e.type);
+    if (e.target.textContent === "x") {
+      e.target.textContent = "*";
+    }
+
     calculator(e.target.textContent);
     //result
   });
   containerButton.appendChild(button);
 }
 
+//Check is number 'Enter' or simbols for operation
+const validateInputUser = (input) => {
+  let filterInput = input.replace(/[^0-9*\/+\-=xEnter]/g, "");
+
+  return regex.test(filterInput);
+};
+
 // main function Calculator
 const calculator = (e) => {
-  console.log(result);
-  let userValue = e;
+  let userValue;
 
+  if (validateInputUser(e)) {
+    userValue = e;
+  }
   //add screen
   addTextScreen(userValue);
 
@@ -106,13 +135,10 @@ const calculator = (e) => {
     values = [];
     result = 0;
     tempResult = 0;
-    console.log("reset");
     checkUserChoice = false;
-    console.log(values);
   }
   if (typeof Number(userValue) === "number" && !isNaN(userValue)) {
     //add value from the user
-    console.log(userValue);
     tempValues += userValue;
   }
   if (
@@ -124,7 +150,6 @@ const calculator = (e) => {
     checkUserChoice = false;
     //add operador to the stack
     operador.push(userValue);
-    console.log(values);
 
     //check values not is empty and add
     if (checkValue(tempValues)) {
@@ -134,9 +159,7 @@ const calculator = (e) => {
     }
     // check have some result in the stack and operate with this
     if (result > 0 && values[1]) {
-      console.log(values);
 
-      console.log("este es el problema");
       tempResult = operator(operador[0], Number(tempResult), Number(values[1]));
       //reset values and save result temp
       tempValues = "";
@@ -145,9 +168,7 @@ const calculator = (e) => {
       operador.shift();
     }
     //check if the have 2 value for operate
-    console.log(values);
     if (values.length === 2) {
-      console.log("segundo if");
       tempResult = Number(
         operator(operador[0], Number(values[0]), Number(values[1]))
       );
@@ -160,7 +181,6 @@ const calculator = (e) => {
   }
   // take result and save result the next interaction!
   if (userValue === "=" || userValue === "Enter") {
-    console.log(operador);
     //history Screen
 
     checkValue(tempValues) && values.push(tempValues);
@@ -181,7 +201,7 @@ const calculator = (e) => {
     //text history
     let textHistoryScreen = document.createElement("p");
     let containerOperator = document.createElement("p");
-    containerOperator.setAttribute('class', 'operation')
+    containerOperator.setAttribute("class", "operation");
     containerOperator.textContent = textScreen.textContent;
     //temporal Result Dom
     let tempResultDom = document.createElement("span");
@@ -199,19 +219,16 @@ const calculator = (e) => {
     textHistoryScreen.appendChild(tempResultDom);
     historyScreen.appendChild(textHistoryScreen);
     container.insertBefore(containerHistoryScreen, screenCal);
-    containerHistoryScreen.appendChild(historyScreen)
+    containerHistoryScreen.appendChild(historyScreen);
 
-    containerHistoryScreen.scrollTop = containerHistoryScreen.scrollHeight
+    containerHistoryScreen.scrollTop = containerHistoryScreen.scrollHeight;
 
     //reset values and result save
-    console.log(`tempresult ${tempResult}`);
     tempValues = tempResult;
     values = [];
     operador.shift();
     result = tempResult;
     checkUserChoice = true;
-    console.log(values);
-    console.log(`result ${result}`);
     //reset and update text main screen
     textScreen.textContent = "";
     addTextScreen(result);
